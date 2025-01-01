@@ -1,6 +1,7 @@
 from sqlalchemy.orm import session
-from .models import Post
-from .schemas import CreatePost
+from AppFastAPI.models.posts import Post
+from AppFastAPI.models.users import User
+from AppFastAPI.schema.posts import CreatePost
 
 
 def get_post_by_id(db: session, post_id: int):
@@ -16,6 +17,11 @@ def get_post_by_title(db: session, post_title: str):
 def get_all_post(db: session, skip: int = 0, limit: int = 100):
     post = db.query(Post).offset(skip).limit(limit).all()
     return post
+
+
+def get_all_users(db: session, skip: int = 0, limit: int = 100):
+    user = db.query(User).offset(skip).limit(limit).all()
+    return user
 
 
 def create_post(db: session, post: CreatePost):

@@ -1,3 +1,6 @@
+"""
+Pydantic schemas for user data
+"""
 from pydantic import BaseModel
 from typing import Union
 

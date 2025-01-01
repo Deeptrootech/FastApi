@@ -1,4 +1,7 @@
-from .database import Base
+"""
+SQLAlchemy Post model
+"""
+from AppFastAPI.database import Base
 from sqlalchemy import Column, Integer, String, TIMESTAMP, Boolean, text
 
 
