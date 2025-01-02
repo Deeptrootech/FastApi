@@ -1,4 +1,5 @@
 from fastapi import Depends, FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from .dependencies import get_current_user
 from .internal import admin

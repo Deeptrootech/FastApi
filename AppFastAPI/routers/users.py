@@ -13,6 +13,6 @@ database.Base.metadata.create_all(bind=engine)
 
 
 @router.get("/get_users", status_code=status.HTTP_200_OK, response_model=List[users.UserBase])
-async def read_posts(db: Annotated[Session, Depends(get_db)]):
+async def read_users(db: Annotated[Session, Depends(get_db)]):
     db_users = crud.get_all_users(db)
     return db_users

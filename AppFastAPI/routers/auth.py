@@ -1,10 +1,11 @@
 """
 Login/Signup routes
 """
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
+from AppFastAPI.utils.send_mail import send_register_success_email
 
 from AppFastAPI.auth.jwt import create_jwt_access_token
 from AppFastAPI.models.users import User
@@ -33,7 +34,7 @@ def login(user: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = D
 
 
 @router.post("/signup")
-def signup(user: UserCreate, db: Session = Depends(get_db)):
+async def signup(background_tasks: BackgroundTasks, user: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user.email).first()
     if existing_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
@@ -46,4 +47,5 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     access_token = create_jwt_access_token({"sub": new_user.username})
+    background_tasks.add_task(send_register_success_email, user.email, user.username)
     return {"access_token": access_token, "token_type": "bearer"}
