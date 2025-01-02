@@ -20,6 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+
 # **********************************************************************************************************************
 # # 1)
 # # Query Parameters and String Validations
@@ -142,68 +143,67 @@ app = FastAPI()
 #     return user
 
 # **********************************************************************************************************************
-# # 6)
-# # Form Fields
-# # (i) request_payload will be ---> form-data
-# # (Do like this if you are directly receiving data from HTML form)
-# @app.post("/login_form", tags=["Form Fields (payload -> form-data)"])
-# async def login_form(username: Annotated[str, Form()], password: Annotated[str, Form()]):
-#     print("password", password)
-#     return {"username": username}
+# 6)
+# Form Fields
+# (i) request_payload will be ---> form-data
+# (Do like this if you are directly receiving data from HTML form)
+@app.post("/login_form", tags=["Form Fields (payload -> form-data)"])
+async def login_form(username: Annotated[str, Form()], password: Annotated[str, Form()]):
+    print("password", password)
+    return {"username": username}
+
+
+# ****** Instead of defining every field... you can also use pydantic model.
+# class FormData(BaseModel):
+#     username: str
+#     password: str
 #
 #
-# # ****** Instead of defining every field... you can also use pydantic model.
-# # class FormData(BaseModel):
-# #     username: str
-# #     password: str
-# #
-# #
-# # @app.post("/login_form", tags=["Form Fields"])
-# # async def login_form(data: Annotated[FormData, Form()]):
-# #     return data
-#
-#
-# # (ii) request_payload will be ---> json
-# @app.post("/login_body", tags=["Form Fields (payload -> json)"])
-# async def login_body(username: Annotated[str, Body()], password: Annotated[str, Body()]):
-#     print("password", password)
-#     return {"username": username}
-#
-#
-# # 7)
-# # Request Files
-# # work for smaller size of files and stored entire file as a bytes in memory.
-# @app.post("/files", tags=["Request Files"])
-# async def create_file(file: Annotated[bytes, File()]):
-#     return {"file_size": len(file)}
-#
-#
-# # work for smaller and larger both size of files and A file stored as a file-like obj in memory up to a maximum size limit, and after passing this limit it will be stored in disk.
-# @app.post("/uploadfile", tags=["Request Files"])
-# async def create_upload_file(file: Annotated[UploadFile, File(description="A file read as UploadFile")]):
-#     return {"filename": file.filename}
-#
-#
-# # 6) and 7) recap
-# # Use File and Form together when you need to receive form-data and files in the same request.
-# @app.post("/files_form", tags=["Request Files & Forms"])
-# async def create_file_form(
-#         file: Annotated[bytes, File()],
-#         fileb: Annotated[UploadFile, File()],
-#         token: Annotated[str, Form()],
-# ):
-#     return {
-#         "file_size": len(file),
-#         "token": token,
-#         "fileb_content_type": fileb.content_type,
-#     }
-#
-#
-# # Warning (For above) --  see same at (https://fastapi.tiangolo.com/tutorial/request-forms-and-files/#recap)
-# # You can declare multiple File and Form parameters in a path operation,
-# # but you can't also declare Body fields that you expect to receive as JSON,
-# # as the request will have the body encoded using multipart/form-data instead of application/json.
-# # (This is not a limitation of FastAPI, it's part of the HTTP protocol.)
+# @app.post("/login_form", tags=["Form Fields"])
+# async def login_form(data: Annotated[FormData, Form()]):
+#     return data
+
+
+# (ii) request_payload will be ---> json
+@app.post("/login_body", tags=["Form Fields (payload -> json)"])
+async def login_body(username: Annotated[str, Body()], password: Annotated[str, Body()]):
+    print("password", password)
+    return {"username": username}
+
+
+# 7)
+# Request Files
+# work for smaller size of files and stored entire file as a bytes in memory.
+@app.post("/files", tags=["Request Files"])
+async def create_file(file: Annotated[bytes, File()]):
+    return {"file_size": len(file)}
+
+
+# work for smaller and larger both size of files and A file stored as a file-like obj in memory up to a maximum size limit, and after passing this limit it will be stored in disk.
+@app.post("/uploadfile", tags=["Request Files"])
+async def create_upload_file(file: Annotated[UploadFile, File(description="A file read as UploadFile")]):
+    return {"filename": file.filename}
+
+
+# 6) and 7) recap
+# Use File and Form together when you need to receive form-data and files in the same request.
+@app.post("/files_form", tags=["Request Files & Forms"])
+async def create_file_form(
+        file: Annotated[bytes, File()],  # file upload (save as bytes)
+        fileb: Annotated[UploadFile, File()],  # file upload (save as file obj)
+        token: Annotated[str, Form()],  # form data
+):
+    return {
+        "file_size": len(file),
+        "token": token,
+        "fileb_content_type": fileb.content_type,
+    }
+
+# Warning (For above) --  see same at (https://fastapi.tiangolo.com/tutorial/request-forms-and-files/#recap)
+# You can declare multiple File and Form parameters in a path operation,
+# but you can't also declare Body fields that you expect to receive as JSON,
+# as the request will have the body encoded using multipart/form-data instead of application/json.
+# (This is not a limitation of FastAPI, it's part of the HTTP protocol.)
 
 # **********************************************************************************************************************
 # # 8) Handling Exception

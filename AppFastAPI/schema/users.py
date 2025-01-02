@@ -1,8 +1,14 @@
-from pydantic import BaseModel, EmailStr, constr, Field
-from typing import List, Set, Union
-from typing import Optional
+"""
+pydantic User model
+"""
+from pydantic import BaseModel, EmailStr, Field
+from typing import Union
 from datetime import datetime
 
+
+# TODO: (Note)
+# note that you cannot directly use UploadFile as a field in a Pydantic model,
+# because file uploads are handled in multipart/form-data format, which is different from JSON.
 
 # Shared User Schema (Base)
 class UserBase(BaseModel):
@@ -37,4 +43,3 @@ class UserUpdate(BaseModel):
     username: Union[str, None]
     email: Union[str, None]
     password: Union[str, None] = Field(min_length=8, max_length=100)  # required field
-

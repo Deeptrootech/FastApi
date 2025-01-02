@@ -1,8 +1,10 @@
 """
 SQLAlchemy User model
 """
-from AppFastAPI.database import Base
-from sqlalchemy import Column, Integer, String, TIMESTAMP, Boolean, text, DateTime
+from fastapi import UploadFile
+
+from ..database import Base
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from datetime import datetime, timezone
 
 
@@ -16,3 +18,4 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     disabled = Column(Boolean, server_default='TRUE')
+    file_path = Column(String, nullable=True)  # Store file path here

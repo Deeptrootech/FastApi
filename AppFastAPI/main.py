@@ -1,6 +1,5 @@
 from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
-import os
 from .dependencies import get_current_user
 from .internal import admin
 from .routers import auth, posts, users
