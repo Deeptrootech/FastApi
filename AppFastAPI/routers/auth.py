@@ -1,12 +1,13 @@
 """
 Login/Signup routes
 """
-from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from ..utils.send_mail import send_register_success_email
 from pathlib import Path
+from ..logger import logger
 
 from ..auth.jwt import create_jwt_access_token
 from ..models.users import User
@@ -31,13 +32,14 @@ def login(user: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = D
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     access_token = create_jwt_access_token({"sub": db_user.username})
+    logger.info("Login Successfull..!!")
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-def validate_and_save_file(file):
+async def validate_and_save_file(file):
     try:
         # Path to save uploaded files inside the 'static/uploads' directory
-        UPLOAD_DIR = Path(__file__).parent / "static" / "uploads"
+        UPLOAD_DIR = Path(__file__).parent.parent / "static" / "uploads"
         UPLOAD_DIR.mkdir(parents=True, exist_ok=True)  # Ensure the folder exists
 
         file_size = file.size
@@ -49,39 +51,45 @@ def validate_and_save_file(file):
         file_location = UPLOAD_DIR / file.filename
 
         # Save the file
+        content = await file.read()
         with open(file_location, "wb") as f:
-            f.write(file.read())
-
+            f.write(content)
         return file_location
     except Exception:
-        print("Some Error occured while uploading file")
+        logger.error("Some Error occured while uploading file")
         return None
 
 
 @router.post("/signup")
 async def signup(
         background_tasks: BackgroundTasks,
-        user: UserCreate,
-        # (For above) Use the Pydantic model for the user data (Json data) ... If you need to receive data as Form then need to define every field here.. like(username: str = Form(...),)
-        file_upload: Annotated[UploadFile, File(description="A file read as UploadFile")],
         # Handle file upload separately
-        db: Session = Depends(get_db)
+        file_upload: Annotated[UploadFile, File(description="A file read as UploadFile")],
+        db: Session = Depends(get_db),
+        # user: UserCreate,
+        # (For above) Use the Pydantic model for the user data (Json data) ... If you need to receive data as Form then need to define every field here.. like below
+        username: str = Form(...),
+        email: str = Form(...),
+        full_name: str = Form(...),
+        password: str = Form(...),
+        disabled: bool = Form(...),
 ):
     # file upload store
-    uploaded_file_location = validate_and_save_file(file_upload)
+    uploaded_file_location = await validate_and_save_file(file_upload)
 
     # metadata (data otherthen file upload) store
-    existing_user = db.query(User).filter(User.email == user.email).first()
+    existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
 
-    hashed_password = hash_password(user.password)
-    new_user = User(full_name=user.full_name, username=user.username, email=user.email, hashed_password=hashed_password,
-                    disabled=user.disabled, file_upload=uploaded_file_location)
+    hashed_password = hash_password(password)
+    new_user = User(full_name=full_name, username=username, email=email, hashed_password=hashed_password,
+                    disabled=disabled, file_path=str(uploaded_file_location))
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
 
     access_token = create_jwt_access_token({"sub": new_user.username})
-    background_tasks.add_task(send_register_success_email, user.email, user.username)
+    background_tasks.add_task(send_register_success_email, email, username)
+    logger.info("SignUp Successfull..!!")
     return {"access_token": access_token, "token_type": "bearer"}

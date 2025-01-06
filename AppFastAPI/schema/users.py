@@ -16,6 +16,7 @@ class UserBase(BaseModel):
     email: EmailStr
     full_name: Union[str, None] = None
     disabled: Union[bool, None] = None
+    file_path: Union[str, None] = None
 
 
 # Schema for creating a new user (Signup)

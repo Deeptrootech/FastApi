@@ -10,7 +10,7 @@ app = FastAPI()  # dependencies=[Depends(get_query_token)]
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(auth.router, tags=["auth"])
-app.include_router(users.router, dependencies=[Depends(get_current_user)])  # protected api
+app.include_router(users.router)  # protected api
 app.include_router(posts.router, dependencies=[Depends(get_current_user)])  # protected api
 app.include_router(
     admin.router,
