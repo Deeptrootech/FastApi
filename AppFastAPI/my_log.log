@@ -1,0 +1,33 @@
+2025-02-10 15:28:27,597 - INFO - Will watch for changes in these directories: ['/home/jitendra/Desktop/Deep/1.FastApi/AppFastAPI']
+2025-02-10 15:28:27,598 - INFO - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-02-10 15:28:27,599 - INFO - Started reloader process [82435] using WatchFiles
+2025-02-10 15:28:28,568 - INFO - Started server process [82440]
+2025-02-10 15:28:28,571 - INFO - Waiting for application startup.
+2025-02-10 15:28:28,572 - INFO - Application startup complete.
+2025-02-10 16:01:10,155 - INFO - Shutting down
+2025-02-10 16:01:10,257 - INFO - Waiting for application shutdown.
+2025-02-10 16:01:10,258 - INFO - Application shutdown complete.
+2025-02-10 16:01:10,259 - INFO - Finished server process [82440]
+2025-02-10 16:01:10,274 - INFO - Stopping reloader process [82435]
+2025-02-10 16:01:12,014 - INFO - Will watch for changes in these directories: ['/home/jitendra/Desktop/Deep/1.FastApi/AppFastAPI']
+2025-02-10 16:01:12,015 - INFO - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-02-10 16:01:12,016 - INFO - Started reloader process [83235] using WatchFiles
+2025-02-10 16:01:12,904 - INFO - Started server process [83241]
+2025-02-10 16:01:12,907 - INFO - Waiting for application startup.
+2025-02-10 16:01:12,908 - INFO - Application startup complete.
+2025-02-10 16:01:37,853 - WARNING - WatchFiles detected changes in 'logger.py'. Reloading...
+2025-02-10 16:01:37,885 - INFO - Shutting down
+2025-02-10 16:01:37,986 - INFO - Waiting for application shutdown.
+2025-02-10 16:01:37,987 - INFO - Application shutdown complete.
+2025-02-10 16:01:37,988 - INFO - Finished server process [83241]
+2025-02-10 16:01:38,902 - INFO - Started server process [83269]
+2025-02-10 16:01:38,906 - INFO - Waiting for application startup.
+2025-02-10 16:01:38,907 - INFO - Application startup complete.
+2025-02-10 16:01:39,599 - WARNING - WatchFiles detected changes in 'logger.py'. Reloading...
+2025-02-10 16:01:39,609 - INFO - Shutting down
+2025-02-10 16:01:39,709 - INFO - Waiting for application shutdown.
+2025-02-10 16:01:39,710 - INFO - Application shutdown complete.
+2025-02-10 16:01:39,710 - INFO - Finished server process [83269]
+2025-02-10 16:01:40,675 - INFO - Started server process [83278]
+2025-02-10 16:01:40,678 - INFO - Waiting for application startup.
+2025-02-10 16:01:40,679 - INFO - Application startup complete.
