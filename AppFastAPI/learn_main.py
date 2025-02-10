@@ -41,7 +41,7 @@ app = FastAPI()
 #             ),
 #         ] = "None",
 #         # Default value None aapi chhe... ahiya "deep" pan lakhi shakai.
-#         # (To upar ni patter ne e ena related regex aapvu padse anhi to error aavse.)
+#         # (To upar ni pattern ne e ena related regex aapvu padse anhi to error aavse.)
 # ):
 #     results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
 #     if q:

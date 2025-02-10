@@ -9,8 +9,14 @@ app = FastAPI()  # dependencies=[Depends(get_query_token)]
 # Mount the "static" directory to serve static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+
+@app.get("/")  # Not protected api
+async def root():
+    return {"message": "Hello Bigger Applications!"}
+
+
 app.include_router(auth.router, tags=["auth"])
-app.include_router(users.router)  # protected api
+app.include_router(users.router)  # unprotected api
 app.include_router(posts.router, dependencies=[Depends(get_current_user)])  # protected api
 app.include_router(
     admin.router,
@@ -21,6 +27,3 @@ app.include_router(
 )  # Not protected api
 
 
-@app.get("/")  # Not protected api
-async def root():
-    return {"message": "Hello Bigger Applications!"}
