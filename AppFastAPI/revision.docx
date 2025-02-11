@@ -1,0 +1,34 @@
+﻿
+
+Query Parameters:
+- If you don't declare the type, FastAPI assumes the parameter is a query parameter.
+
+
+
+
+
+
+Path Parameters:
+
+
+
+
+
+
+Request Body:
+
+
+
+
+
+
+
+
+
+
+
+
+Form Data:
+
+
+

@@ -22,7 +22,7 @@ app = FastAPI()
 
 
 # **********************************************************************************************************************
-# # 1)
+# # 1) -- https://freedium.cfd/https://medium.com/@rubihali/fast-api-with-annotated-4ee69c2271d1
 # # Query Parameters and String Validations
 # # (Validations karvu hatu etle 'Annotated' no use karyo other wise sidhu Typelass(here.. str | None) aapi shakai.)
 # # (str | None) ma "or None" karyu e django ma Null=True (Field Not required) jevu  j chhe.
