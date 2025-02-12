@@ -1,8 +1,9 @@
 """
 SQLAlchemy Post model
 """
-from ..database import Base
 from sqlalchemy import Column, Integer, String, TIMESTAMP, Boolean, text
+
+from database import Base
 
 
 class Post(Base):
@@ -13,3 +14,7 @@ class Post(Base):
     content = Column(String, nullable=False)
     published = Column(Boolean, server_default='TRUE')
     created_at = Column(TIMESTAMP(timezone=True), server_default=text('now()'))
+    # updated_at = Column(TIMESTAMP(timezone=True), server_default=text('now()'))
+
+
+    #TODO: uncomment this and start checking for each command

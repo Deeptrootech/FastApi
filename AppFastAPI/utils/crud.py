@@ -1,7 +1,7 @@
 from sqlalchemy.orm import session
-from AppFastAPI.models.posts import Post
-from AppFastAPI.models.users import User
-from AppFastAPI.schema.posts import CreatePost
+from models.posts import Post
+from models.users import User
+from schema.posts import CreatePost
 
 
 def get_post_by_id(db: session, post_id: int):

@@ -5,16 +5,16 @@ from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks, 
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
-from ..utils.send_mail import send_register_success_email
+from utils.send_mail import send_register_success_email
 from pathlib import Path
-from ..logger import logger
+from logger import logger
 
-from ..auth.jwt import create_jwt_access_token
-from ..models.users import User
-from ..schema.auth import Token
-from ..schema.users import UserLogin, UserCreate
-from ..database import get_db
-from ..utils.hashing import verify_password, hash_password
+from auth.jwt import create_jwt_access_token
+from models.users import User
+from schema.auth import Token
+from schema.users import UserLogin, UserCreate
+from database import get_db
+from utils.hashing import verify_password, hash_password
 
 router = APIRouter()
 

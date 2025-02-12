@@ -3,9 +3,9 @@ SQLAlchemy User model
 """
 from fastapi import UploadFile
 
-from ..database import Base
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from datetime import datetime, timezone
+from database import Base
 
 
 class User(Base):

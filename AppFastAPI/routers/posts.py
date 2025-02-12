@@ -1,16 +1,14 @@
 from fastapi import Depends, APIRouter, HTTPException, status, Body, Path
 from sqlalchemy.orm import Session
 
-from ..database import get_db, engine, Base
-from ..schema import posts
+from database import get_db, engine, Base
+from schema import posts
 from typing_extensions import Annotated
 from typing import List
 
-from ..utils import crud
+from utils import crud
 
 router = APIRouter(tags=["Posts"])  # You can think of APIRouter as a "mini FastAPI" class.
-
-Base.metadata.create_all(bind=engine)
 
 
 @router.post("/create_post", status_code=status.HTTP_201_CREATED, response_model=posts.GetPost)

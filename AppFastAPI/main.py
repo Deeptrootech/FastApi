@@ -1,8 +1,9 @@
 from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
-from .dependencies import get_current_user
-from .internal import admin
-from .routers import auth, posts, users
+
+from dependencies import get_current_user
+from internal import admin
+from routers import auth, posts, users
 
 app = FastAPI()  # dependencies=[Depends(get_query_token)]
 
@@ -25,5 +26,3 @@ app.include_router(
     # dependencies=[Depends(get_current_user)],
     responses={418: {"description": "I'm a teapot"}},
 )  # Not protected api
-
-
