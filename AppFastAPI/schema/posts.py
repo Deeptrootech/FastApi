@@ -8,6 +8,7 @@ from typing import Union
 class PostBase(BaseModel):
     content: str
     title: str
+    genre: str
 
     class Config:
         orm_model = True
