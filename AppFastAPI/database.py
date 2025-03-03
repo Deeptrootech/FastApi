@@ -6,11 +6,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# TODO: If you change here then also change same in alembic.ini
+# TODO: If you change here then also change same in alembic.ini -> sqlalchemy.url
 SQLALCHEMY_DATABASE_URL = "postgresql://deep:1234@localhost:5432/appfastapi_sqlalchemy"
 # SQLALCHEMY_DATABASE_URL = "postgresql://postgres_username:postgres_password@localhost:5432/mydatabase"
+
+# Create Engine
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
+
+#  Create a Session Local class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Base class for models
 Base = declarative_base()
 
 
