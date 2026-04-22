@@ -63,11 +63,15 @@ async def validate_and_save_file(file):
 @router.post("/signup")
 async def signup(
         background_tasks: BackgroundTasks,
+
         # Handle file upload separately
         file_upload: Annotated[UploadFile, File(description="A file read as UploadFile")],
+
+        # Dependency Injection
         db: Session = Depends(get_db),
-        # user: UserCreate,
-        # (For above) Use the Pydantic model for the user data (Json data) ... If you need to receive data as Form then need to define every field here.. like below
+
+        # user: UserCreate, # Use the Pydantic model for the user data (JSON data)...
+        # But, If you need to receive data as Form then need to define every field here... like below
         username: str = Form(...),
         email: str = Form(...),
         full_name: str = Form(...),

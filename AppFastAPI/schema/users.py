@@ -30,7 +30,7 @@ class UserResponse(UserBase):
     created_at: Union[datetime, None] = None
 
     class Config:
-        orm_mode = True  # allows Pydantic models to work seamlessly with SQLAlchemy models.
+        from_attributes = True  # allows Pydantic models to work seamlessly with SQLAlchemy models.
 
 
 # Schema for user login

@@ -19,6 +19,6 @@ async def send_register_success_email(to_email: str, username: str):
         hostname="smtp.gmail.com",  # e.g., smtp.gmail.com
         port=465,
         username="deep.pathak@trootech.com",
-        password="Kmnj#@5by",
+        password="rocq tcwp abjh vblm",
         use_tls=True,
     )

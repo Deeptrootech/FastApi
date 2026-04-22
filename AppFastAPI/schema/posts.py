@@ -11,16 +11,16 @@ class PostBase(BaseModel):
     genre: str
 
     class Config:
-        orm_model = True
+        from_attributes = True
 
 
 class GetPost(PostBase):
     id: Union[int, None]  # int | None
 
     class Config:
-        orm_model = True
+        from_attributes = True
 
 
 class CreatePost(PostBase):
     class Config:
-        orm_model = True
+        from_attributes = True

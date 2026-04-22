@@ -11,6 +11,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     """
+        ************** CHECKS Is_Authenticated ********************
         Validate the JWT token and retrieve the current user.
 
         Args:
@@ -31,3 +32,23 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Se
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
+
+
+def authorized_role(loggedin_user: Annotated[User, Depends(get_current_user)], roles: list[str]):
+    if loggedin_user.role not in roles:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    return loggedin_user
+
+# def require_role(required_roles: list[str]):
+#     def checker(
+#         user: User = Depends(get_current_user),
+#         db: Session = Depends(get_db)
+#     ):
+#         db_user = db.query(User).filter(User.username == user.username).first()
+#
+#         if not db_user or db_user.role.name not in required_roles:
+#             raise HTTPException(status_code=403, detail="Not enough permissions")
+#
+#         return db_user
+#
+#     return checker

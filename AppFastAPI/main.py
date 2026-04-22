@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 
 from dependencies import get_current_user
 from internal import admin
-from routers import auth, posts, users
+from routers import auth, posts, users, roles
 
 app = FastAPI()  # dependencies=[Depends(get_query_token)]
 
@@ -18,6 +18,7 @@ async def root():
 
 app.include_router(auth.router, tags=["auth"])
 app.include_router(users.router)  # unprotected api
+app.include_router(roles.router)
 app.include_router(posts.router, dependencies=[Depends(get_current_user)])  # protected api
 app.include_router(
     admin.router,

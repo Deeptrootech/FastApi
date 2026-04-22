@@ -3,9 +3,19 @@ SQLAlchemy User model
 """
 from fastapi import UploadFile
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
 from datetime import datetime, timezone
+
+from sqlalchemy.orm import relationship
+
 from database import Base
+
+
+class Role(Base):
+    __tablename__ = "roles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False)
 
 
 class User(Base):
@@ -19,3 +29,6 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     disabled = Column(Boolean, server_default='TRUE')
     file_path = Column(String, nullable=True)  # Store file path here
+    role_id = Column(Integer, ForeignKey("roles.id"))  # Actual DB column
+
+    role = relationship("Role")  # Python-side object mapping
