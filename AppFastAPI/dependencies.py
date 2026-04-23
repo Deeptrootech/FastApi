@@ -9,9 +9,9 @@ from sqlalchemy.orm import Session
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
+# ********************* CHECKS Is_Authenticated -----> authentication ************************************
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     """
-        ************** CHECKS Is_Authenticated ********************
         Validate the JWT token and retrieve the current user.
 
         Args:
@@ -34,21 +34,16 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Se
     return user
 
 
-def authorized_role(loggedin_user: Annotated[User, Depends(get_current_user)], roles: list[str]):
-    if loggedin_user.role not in roles:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
-    return loggedin_user
+# ********************* CHECKS Is_Authorized -----> authentication + authorization ************************************
+def authorized_role(roles: list[str]):
+    allowed = {r.lower() for r in roles}
 
-# def require_role(required_roles: list[str]):
-#     def checker(
-#         user: User = Depends(get_current_user),
-#         db: Session = Depends(get_db)
-#     ):
-#         db_user = db.query(User).filter(User.username == user.username).first()
-#
-#         if not db_user or db_user.role.name not in required_roles:
-#             raise HTTPException(status_code=403, detail="Not enough permissions")
-#
-#         return db_user
-#
-#     return checker
+    def dependency_checker(user: User = Depends(get_current_user)):
+        if not user.role or user.role.name.lower() not in allowed:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="You Are Not Authorized TO Access This"
+            )
+        return user
+
+    return dependency_checker

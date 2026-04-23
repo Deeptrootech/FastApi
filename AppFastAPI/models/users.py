@@ -29,6 +29,6 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     disabled = Column(Boolean, server_default='TRUE')
     file_path = Column(String, nullable=True)  # Store file path here
-    role_id = Column(Integer, ForeignKey("roles.id"))  # Actual DB column
+    role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)  # Actual DB column
 
     role = relationship("Role")  # Python-side object mapping
