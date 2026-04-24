@@ -73,6 +73,7 @@ async def signup(
         # user: UserCreate, # Use the Pydantic model for the user data (JSON data)...
         # But, If you need to receive data as Form then need to define every field here... like below
         username: str = Form(...),
+        role_id: str = Form(...),
         email: str = Form(...),
         full_name: str = Form(...),
         password: str = Form(...),
@@ -88,7 +89,7 @@ async def signup(
 
     hashed_password = hash_password(password)
     new_user = User(full_name=full_name, username=username, email=email, hashed_password=hashed_password,
-                    disabled=disabled, file_path=str(uploaded_file_location))
+                    disabled=disabled, file_path=str(uploaded_file_location), role_id=role_id)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
