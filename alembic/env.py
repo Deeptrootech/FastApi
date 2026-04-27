@@ -6,6 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from database.common_config import Base
+from models import global_models  # This Is very importatnt to load. otherwise Model Will not be created in DB.
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
