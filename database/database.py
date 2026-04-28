@@ -1,0 +1,23 @@
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+SQLALCHEMY_DATABASE_URL = "postgresql://deep:1234@localhost:5432/IssueTrackerDB"
+
+# Create Engine
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+
+#  Create a Session Local class
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Base class for models
+Base = declarative_base()
+
+
+# Instantiate database session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
