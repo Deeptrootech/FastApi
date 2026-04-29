@@ -6,16 +6,18 @@ from database.database import get_db
 from dependency import is_authenticated
 from models.projects import Project, ProjectMember
 from models.users import User
-from schema.project import CreateProject, ListProject
+from schema.project import CreateProject, ProjectList
 from schema.project_member import AddProjectMember, ProjectMemberResponse
-from utils.activity_log import create_activity_log
+from utils.pagination import paginate
 
 router = APIRouter(dependencies=[Depends(is_authenticated)])
 
 
-@router.get("/projects", response_model=List[ListProject])
-def get_projects(db=Depends(get_db)):
-    return db.query(Project).all()
+@router.get("/projects", response_model=ProjectList)
+def get_projects(db=Depends(get_db), limit=10, offset=0):
+    project_obj = db.query(Project)
+    total, data = paginate(project_obj, offset, limit)
+    return {"total": total, "data": data}
 
 
 @router.post("/projects")
@@ -60,7 +62,6 @@ def add_project_member(project_id: int, payload: AddProjectMember, db=Depends(ge
     db.add(projectmember)
     db.commit()
     db.refresh(projectmember)
-
 
     return projectmember
 

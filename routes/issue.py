@@ -7,8 +7,9 @@ from models.issues import Issue, StatusEnum
 from models.projects import Project, ProjectMember
 from models.users import User
 from schema.activity import ResponseActivity
-from schema.issue import CreateIssue, ResponseIssue, ChangeIssueStatus
+from schema.issue import CreateIssue, ResponseIssue, ChangeIssueStatus, ResponseIssueList
 from utils.activity_log import create_activity_log
+from utils.pagination import paginate
 
 router = APIRouter()
 
@@ -22,6 +23,19 @@ def get_issue_activities(issue_id: int, db=Depends(get_db)):
 
     activities = db.query(ActivityLog).filter(ActivityLog.issue_id == issue_id).all()
     return activities
+
+
+@router.get("/issues", dependencies=[Depends(is_authenticated)], response_model=ResponseIssueList)
+def list_issues(status: str, priority: str, assigned_to: int, limit=10, offset=0, db=Depends(get_db)):
+    issue_obj = db.query(Issue)
+    if status:
+        issue_obj = issue_obj.filter(Issue.status == status)
+    if priority:
+        issue_obj = issue_obj.filter(Issue.priority == priority)
+    if assigned_to:
+        issue_obj = issue_obj.filter(Issue.assigned_to_id == assigned_to)
+    total, data = paginate(issue_obj, offset, limit)
+    return {"total": total, "data": data}
 
 
 @router.post("/projects/{project_id}/issues/", response_model=ResponseIssue)
@@ -92,3 +106,14 @@ def change_issue_status(issue_id: int, rquest_data: ChangeIssueStatus, db=Depend
     create_activity_log(issue.id, "status_changed", current_user.id,
                         f"status changed from {issue.status} ----> {rquest_data.status} ")
     return issue
+
+
+@router.delete("/issue/{issue_id}/delete", dependencies=[Depends(is_authenticated)])
+def delete_issue(issue_id: int, db=Depends(get_db)):
+    issue = Issue.get_active_issues_query(db).filter(Issue.id == issue_id).first()
+    if not issue:
+        raise HTTPException(status_code=404, detail="No Active Issue found")
+
+    issue.is_deleted = True
+    db.commit()
+    return {"message": "Issue deleted successfully"}

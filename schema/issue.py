@@ -20,5 +20,10 @@ class ResponseIssue(BaseModel):
     assigned_to_id: int
 
 
+class ResponseIssueList(BaseModel):
+    total: int
+    data: list[ResponseIssue]
+
+
 class ChangeIssueStatus(BaseModel):
     status: str
