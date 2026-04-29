@@ -11,5 +11,5 @@ class Comment(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     text = Column(String(100), nullable=False)
 
-    issue = relationship("Issues", backref="comments")
+    issue = relationship("Issue", backref="comments")
     user = relationship("User", backref="comments")

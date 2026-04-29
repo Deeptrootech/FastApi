@@ -1,5 +1,5 @@
 from enum import Enum
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum as AlchemyEnum
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum as AlchemyEnum, UniqueConstraint
 from sqlalchemy.orm import relationship
 from database.database import Base
 
@@ -30,4 +30,8 @@ class ProjectMember(Base):
     role = Column(AlchemyEnum(RoleEnum, native_enum=False))
 
     user = relationship("User", backref="project_members")
-    project = relationship("Projects", backref="project_members")
+    project = relationship("Project", backref="project_members")
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "project_id", name="unique_user_project"),
+    )

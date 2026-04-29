@@ -16,5 +16,5 @@ class ActivityLog(Base):
     metadata_ = Column(String(200))
     timestamp = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    issue = relationship("Issues", backref="activity_logs")
+    issue = relationship("Issue", backref="activity_logs")
     performed_by = relationship("User", backref="activity_logs")
