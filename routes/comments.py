@@ -22,5 +22,5 @@ def add_comments(comment_payload: AddComment, issue_id: int, db=Depends(get_db),
     db.refresh(comment)
 
     create_activity_log(issue.id, "comment_added", current_user.id,
-                        f"{current_user.name} added a comment to issue {issue.title}")
+                        f"{current_user.name} added a comment to issue {issue.title}", db)
     return comment

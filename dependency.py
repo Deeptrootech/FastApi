@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 
@@ -36,7 +38,7 @@ async def is_authenticated(token=Depends(bearer_token_scheme), db: Session = Dep
 
 
 # ********************* CHECKS Is_Authorized -----> authentication + authorization ************************************
-def authorized_role(roles: list[str]):
+def authorized_role(roles: List[str]):
     allowed = {r.lower() for r in roles}
 
     def dependency_checker(user: User = Depends(is_authenticated)):

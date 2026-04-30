@@ -1,52 +1,32 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from fastapi.testclient import TestClient
 
 from database.database import Base, get_db
+from main import app
 
-# Use in-memory SQLite for speed
+# **************** Test DB Setup *******************
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+TestingSessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False}
-)
-
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# ******************* Create tables *******************
+Base.metadata.create_all(bind=engine)
 
 
-# Create fresh DB for each test session
-@pytest.fixture(scope="session", autouse=True)
-def create_test_db():
-    Base.metadata.create_all(bind=engine)
-    yield
-    Base.metadata.drop_all(bind=engine)
+# ******************* Override DB dependency *******************
+def override_get_db():
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
-# Clean DB before each test
+app.dependency_overrides[get_db] = override_get_db
+
+
 @pytest.fixture(autouse=True)
-def db_session():
-    connection = engine.connect()
-    transaction = connection.begin()
-
-    session = TestingSessionLocal(bind=connection)
-
-    def override_get_db():
-        try:
-            yield session
-        finally:
-            session.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-
-    yield session
-
-    transaction.rollback()
-    connection.close()
-
-
-# Test client
-@pytest.fixture
-def client():
-    return TestClient(app)
+def clear_db():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)

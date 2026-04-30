@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel
 
 
@@ -9,7 +10,7 @@ class ListProject(BaseModel):
 
 class ProjectList(BaseModel):
     total: int
-    data: list[ListProject]
+    data: List[ListProject]
 
 
 class CreateProject(BaseModel):

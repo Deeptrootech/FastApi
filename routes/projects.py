@@ -6,7 +6,7 @@ from database.database import get_db
 from dependency import is_authenticated
 from models.projects import Project, ProjectMember
 from models.users import User
-from schema.project import CreateProject, ProjectList
+from schema.project import CreateProject, ProjectList, ListProject
 from schema.project_member import AddProjectMember, ProjectMemberResponse
 from utils.pagination import paginate
 
@@ -20,7 +20,7 @@ def get_projects(db=Depends(get_db), limit=10, offset=0):
     return {"total": total, "data": data}
 
 
-@router.post("/projects")
+@router.post("/projects", response_model=ListProject)
 def create_project(payload: CreateProject, db=Depends(get_db)):
     existing_project = db.query(Project).filter(Project.name == payload.name).first()
     if existing_project:
@@ -28,7 +28,7 @@ def create_project(payload: CreateProject, db=Depends(get_db)):
     project = Project(name=payload.name, description=payload.description)
     db.add(project)
     db.commit()
-    return {"message": "Project created successfully"}
+    return project
 
 
 @router.post("/projects/{project_id}/add-member", response_model=ProjectMemberResponse)

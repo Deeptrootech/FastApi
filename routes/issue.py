@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 
 from database.database import get_db
@@ -15,7 +17,7 @@ router = APIRouter()
 
 
 @router.get("/issues/{issue_id}/activity/", dependencies=[Depends(is_authenticated)],
-            response_model=list[ResponseActivity])
+            response_model=List[ResponseActivity])
 def get_issue_activities(issue_id: int, db=Depends(get_db)):
     issue = db.query(Issue).filter(Issue.id == issue_id).first()
     if not issue:
@@ -70,7 +72,7 @@ def create_issue(project_id: int, payload: CreateIssue, db=Depends(get_db), curr
     db.refresh(issue)
 
     create_activity_log(issue.id, "issue_created", current_user.id,
-                        f"Issue {issue.title} created by {current_user.name}")
+                        f"Issue {issue.title} created by {current_user.name}", db)
     return issue
 
 
@@ -104,7 +106,7 @@ def change_issue_status(issue_id: int, rquest_data: ChangeIssueStatus, db=Depend
     db.refresh(issue)
 
     create_activity_log(issue.id, "status_changed", current_user.id,
-                        f"status changed from {issue.status} ----> {rquest_data.status} ")
+                        f"status changed from {issue.status} ----> {rquest_data.status} ", db)
     return issue
 
 

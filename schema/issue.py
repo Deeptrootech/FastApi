@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel
 
 from models.issues import PriorityEnum, StatusEnum
@@ -22,7 +23,7 @@ class ResponseIssue(BaseModel):
 
 class ResponseIssueList(BaseModel):
     total: int
-    data: list[ResponseIssue]
+    data: List[ResponseIssue]
 
 
 class ChangeIssueStatus(BaseModel):
