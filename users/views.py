@@ -1,64 +1,82 @@
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
+from rest_framework import status
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import *
+from .services import logout_user, send_password_reset_mail, reset_user_password
 
 User = get_user_model()
 
 
 class RegisterView(APIView):
+    serializer_class = RegisterSerializer
+
     def post(self, request):
-        s = RegisterSerializer(data=request.data)
-        s.is_valid(raise_exception=True)
-        s.save()
-        return Response({"msg": "Registered"})
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class LoginView(APIView):
-    def post(self, request):
-        s = LoginSerializer(data=request.data)
-        s.is_valid(raise_exception=True)
-        return Response(s.validated_data)
+class LoginApiView(TokenObtainPairView):
+    """
+    In this view,
+    rest_framework_simplejwt will handle validation and authenticate user.
+    then generate & return tokens.
+    """
+    serializer_class = LoginSerializer
 
 
 class LogoutView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        token = RefreshToken(request.data["refresh"])
-        token.blacklist()
-        return Response({"msg": "Logged out"})
+        refresh = request.data.get("refresh")
+
+        if not refresh:
+            return Response({"error": "Refresh token required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            logout_user(refresh)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Logged out"})
 
 
-class UpdateView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+class UpdateUserView(APIView):
+    serializer_class = UpdateUserSerializer
+    permission_classes = [IsAuthenticated]
 
     def patch(self, request):
-        s = UpdateSerializer(request.user, data=request.data, partial=True)
-        s.is_valid(raise_exception=True)
-        s.save()
-        return Response(s.data)
+        serializer = self.serializer_class(
+            request.user, data=request.data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 class ForgotPasswordView(APIView):
+    serializer_class = ForgotPasswordSerializer
+
     def post(self, request):
-        email = request.data.get("email")
-        user = User.objects.filter(email=email).first()
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        if user:
-            uid = urlsafe_base64_encode(force_bytes(user.id))
-            token = PasswordResetTokenGenerator().make_token(user)
+        user = serializer.context["user"]
+        send_password_reset_mail(user)
 
-            print(f"/reset/{uid}/{token}/")  # replace with email send
-
-        return Response({"msg": "If email exists, link sent"})
+        return Response({"message": "Reset link sent"})
 
 
 class ResetPasswordView(APIView):
     def post(self, request):
-        s = ResetPasswordSerializer(data=request.data)
-        s.is_valid(raise_exception=True)
-        s.save()
-        return Response({"msg": "Password updated"})
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.validated_data["user"]
+        password = serializer.validated_data["password"]
+
+        reset_user_password(user, password)
+
+        return Response({"message": "Password reset successful"})

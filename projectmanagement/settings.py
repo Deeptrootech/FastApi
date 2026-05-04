@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "rest_framework",
-    "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "users"
 ]
@@ -58,10 +57,14 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "AUTH_HEADER_TYPES": ("Bearer",),
-    "BLACKLIST_AFTER_ROTATION": True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=env.int("ACCESS_TOKEN_LIFETIME", default=5)  # 5 minutes
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=env.int("REFRESH_TOKEN_LIFETIME", default=20)  # 20 days
+    ),
+    "ROTATE_REFRESH_TOKENS": True,  # Added for better security
+    "BLACKLIST_AFTER_ROTATION": True,  # Added for better security
 }
 
 MIDDLEWARE = [
@@ -144,3 +147,5 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+FRONTEND_RESET_PASSWORD_URL = env.str("FRONTEND_RESET_PASSWORD_URL", "http://localhost:3000/reset-password/")
