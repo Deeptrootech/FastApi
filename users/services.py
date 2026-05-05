@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
 from projectmanagement.settings import FRONTEND_RESET_PASSWORD_URL
-from utils.email_service import send_email
+from utils.tasks import send_email
 
 User = get_user_model()
 
@@ -80,7 +80,7 @@ def send_password_reset_mail(user):
 
     link = f"{FRONTEND_RESET_PASSWORD_URL}?token={token}&uid={uid}"
 
-    send_email(
+    send_email.delay(
         subject="Reset Password",
         message=f"Click here to reset your password:\n{link}",
         recipient_list=[user.email],

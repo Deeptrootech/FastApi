@@ -75,6 +75,11 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,  # Added for better security
 }
 
+# Celery settings
+CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", "redis://redis:6379/0")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
