@@ -3,6 +3,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
 from projectmanagement.settings import FRONTEND_RESET_PASSWORD_URL
 from utils.email_service import send_email
@@ -45,7 +46,7 @@ def logout_user(refresh_token: str):
 
 
     *** Why Refrest token? ***
-    You can Blacklist access tokens too... but it Requires DB/Redis lookup on EVERY request.
+    You could Blacklist access tokens too... but it Requires DB/Redis lookup on EVERY request.
     (Because It will check in every-request... access-token in this request is blacklisted or not)
 
     Which Breaks stateless nature of JWT & its Slower too.
@@ -89,3 +90,22 @@ def send_password_reset_mail(user):
 def reset_user_password(user, password: str):
     user.set_password(password)
     user.save()
+
+
+def blacklist_all_user_tokens(user):
+    """
+    you should blacklist tokens whenever we change any field which is related to auth or added into token payload.
+    like...
+    - email (added into token payload)
+    - password
+
+    Not always needed but can be used based on requirements.
+    But, It is good practice.
+
+    WAIT... WAIT... WAIT...
+    here, also access token will still valid until its expiry. (same like we did in Logout)
+    we blacklisted ll tokens of that user because we were not getting refresh token in API body.
+    so, we blocked all tokens of that user.
+    """
+    for token in OutstandingToken.objects.filter(user=user):
+        BlacklistedToken.objects.get_or_create(token=token)
