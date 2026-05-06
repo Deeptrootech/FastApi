@@ -138,7 +138,7 @@ ProjectManagement/
 
 - `POST /user/auth/register/` - User registration
 - `POST /user/auth/login/` - User login (returns JWT tokens)
-- `POST /user/auth/logout/` - User logout (requires refresh token)
+- `POST /user/auth/logout/` - User logout (blacklist refresh token)
 - `POST /user/auth/token/refresh/` - Refresh access token
 - `POST /user/auth/forgot-password/` - Request password reset email
 - `POST /user/auth/reset-password/` - Reset password with reset-token
