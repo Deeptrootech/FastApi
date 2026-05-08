@@ -1,6 +1,4 @@
-from fastapi import FastAPI, Depends
-
-from dependency import is_authenticated
+from fastapi import FastAPI
 from routes import auth, projects, issue, comments
 
 app = FastAPI()

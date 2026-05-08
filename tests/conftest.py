@@ -26,6 +26,7 @@ def override_get_db():
 app.dependency_overrides[get_db] = override_get_db
 
 
+# ******************* Clear DB After Each Test *******************
 @pytest.fixture(autouse=True)
 def clear_db():
     Base.metadata.drop_all(bind=engine)
