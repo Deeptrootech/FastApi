@@ -1,0 +1,20 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    restart: always
+    depends_on:
+      - database
+
+  database:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: issue_tracking_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # persistent DB storage
+
+volumes:
+  postgres_data:
