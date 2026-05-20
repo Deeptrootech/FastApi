@@ -42,10 +42,10 @@ def authorized_role(roles: List[str]):
     allowed = {r.lower() for r in roles}
 
     def dependency_checker(user: User = Depends(is_authenticated)):
-        if not user.role or user.role.name.lower() not in allowed:
+        if not user.user_role or user.user_role.lower() not in allowed:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="You Are Not Authorized TO Access This"
+                detail="You Are Not Authorized TO Access This API"
             )
         return user
 

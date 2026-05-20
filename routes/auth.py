@@ -38,7 +38,8 @@ def register(background_tasks: BackgroundTasks, payload: RegisterUser, db: Sessi
     user = User(
         name=payload.name,
         email=payload.email,
-        hashed_password=hashed_password
+        hashed_password=hashed_password,
+        user_role=payload.user_role
     )
 
     try:
@@ -65,3 +66,9 @@ def register(background_tasks: BackgroundTasks, payload: RegisterUser, db: Sessi
             "email": user.email
         }
     }
+
+
+@router.get("/users")
+def list_users(db=Depends(get_db)):
+    users = db.query(User).all()
+    return users

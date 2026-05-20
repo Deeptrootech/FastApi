@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 
 from database.database import get_db
-from dependency import is_authenticated
+from dependency import is_authenticated, authorized_role
 from models.projects import Project, ProjectMember
 from models.users import User
 from schema.project import CreateProject, ProjectList, ListProject
@@ -21,7 +21,11 @@ def get_projects(db=Depends(get_db), limit=10, offset=0):
 
 
 @router.post("/projects", response_model=ListProject)
-def create_project(payload: CreateProject, db=Depends(get_db)):
+def create_project(payload: CreateProject, db=Depends(get_db),
+                   allowed_role=Depends(authorized_role(["admin", "employee"]))):
+    """
+    Only admin and employee Roles are allowed to access this API
+    """
     existing_project = db.query(Project).filter(Project.name == payload.name).first()
     if existing_project:
         raise HTTPException(status_code=400, detail="Project already exists")
@@ -32,7 +36,11 @@ def create_project(payload: CreateProject, db=Depends(get_db)):
 
 
 @router.post("/projects/{project_id}/add-member", response_model=ProjectMemberResponse)
-def add_project_member(project_id: int, payload: AddProjectMember, db=Depends(get_db)):
+def add_project_member(project_id: int, payload: AddProjectMember, db=Depends(get_db),
+                       allowed_role=Depends(authorized_role(["admin", "employee"]))):
+    """
+    Only admin and employee Roles are allowed to access this API
+    """
     # Check project exists
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:

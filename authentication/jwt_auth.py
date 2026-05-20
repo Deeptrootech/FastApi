@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 SECRET_KEY = "secret_key"
 ALGORITHM = "HS256"
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 180
+ACCESS_TOKEN_EXPIRE_MINUTES = 180  # 3 hours
 
 
 def create_jwt_access_token(data: dict):
