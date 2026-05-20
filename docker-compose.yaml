@@ -1,20 +1,59 @@
 services:
   app:
     build: .
+    container_name: issue_tracking_app
     ports:
       - "8000:8000"
     restart: always
+    env_file:
+      - .env
     depends_on:
       - database
 
   database:
     image: postgres:17
     environment:
-      POSTGRES_DB: issue_tracking_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-issue_tracking_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes:
       - postgres_data:/var/lib/postgresql/data  # persistent DB storage
 
+  redis:
+    # https://medium.com/@ashishauti123/configure-celery-and-flower-with-django-e002e8847660
+    # https://python.plainenglish.io/unlock-async-email-magic-with-docker-compose-celery-flower-redis-in-django-rest-framework-drf-26d94da5ac49
+    image: redis:7
+    container_name: issue_tracking_redis
+    restart: always
+
+  celery: # we also can configure celery-beat by creating aother containersame way. (see... above 2nd link)
+    # copied same web code in this container also. because celery needs django code to run.
+    # It needs to work as directed in that (.delay) marked function.
+    # and in one container we can run only single command. so, for celery command we created this container.
+    build: .
+    container_name: issue_tracking_celery
+    env_file:
+      - .env
+    volumes:
+      - .:/app  # mount your project for live reload
+    command: celery -A celery_app.celery worker -l info
+    restart: always
+    depends_on:
+      - redis
+      - database
+
+  flower: # web-based monitoring tool for Celery tasks
+
+    build: .
+    container_name: issue_tracking_flower
+    env_file:
+      - .env
+    command: celery -A celery_app.celery flower --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD}
+    volumes:
+      - .:/app
+    ports:
+      - "5555:5555" # we exposed port to out host machine. because we will be accessing this from there.
+    depends_on:
+      - redis
 volumes:
   postgres_data:
